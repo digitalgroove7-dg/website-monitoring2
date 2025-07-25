@@ -1,0 +1,26 @@
+name: Daily Website Monitor
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # every day at 6 AM UTC
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install playwright pillow requests
+          playwright install
+
+      - name: Run website monitor
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+        run: python website_monitor.py
